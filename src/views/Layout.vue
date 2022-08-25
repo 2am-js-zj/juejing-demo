@@ -1,8 +1,8 @@
 <template>
   <div class="container">
-    <input type="checkbox" id="login-show" ref="box">
-    <div class="login-box">
-      <Login @close="close"></Login>
+    <!-- <input type="checkbox" id="login-show" ref="box"> -->
+    <div class="login-box" v-show="loginBox">
+      <Login @close="updatelogin()" ></Login>
     </div>
     <!-- 导航栏 -->
     <header class="zjl_header">
@@ -12,7 +12,7 @@
                 <div>
                     <a class="zjl_logo" href="#">
                         <img src="https://lf3-cdn-tos.bytescm.com/obj/static/xitu_juejin_web/e08da34488b114bd4c665ba2fa520a31.svg"
-                            width="107px" height="22px" />
+                            style="width:107px;height:22px" />
                     </a>
                 </div>
                 <!-- 导航栏nav -->
@@ -101,8 +101,8 @@
                             </li>
                             <!-- 登录按钮 -->
                             <li class="zjl_li login_btn_li">
-                                <!-- <button class="login_btn" id="true-but">登录</button> -->
-                                <label class="login_btn" for="login-show">登录</label>
+                                <button class="login_btn" @click="show()">登录</button>
+                                <!-- <label class="login_btn" for="login-show">登录</label> -->
                             </li>
 
                         </ul>
@@ -111,31 +111,69 @@
             </div>
         </div>
     </header>
-    <router-link to="/article" style="position:fixed;top:100px;z-index: 5;">文章详情页</router-link>
     <router-view class="body"></router-view>
+    <button class="backTop" v-if="backBtn" @click="toTop()">
+   <svg t="1661417880362" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2333" width="12" height="20">
+    <path d="M39.3846 0h945.2307692307693v157.53846153846155h-945.2307692307693V0zM984.6154 708.9231h-236.30769230769232v315.0769230769231h-472.61538461538464V708.9230769230769h-236.30769230769232l472.6154-472.6154L984.6154 708.9231z" p-id="2334" fill="#bfbfbf">
+    </path></svg>
+    </button>
   </div>
 </template>
 <script>
+import { ref,onMounted } from 'vue';
 import Login from "../components/Login.vue";
 export default {
 components:{
   Login
   },
-  methods: {
-    close() {
-      console.log(1)
-      this.$refs("box").click()
+  setup() {
+    const loginBox = ref(false)
+    const updatelogin = () => {
+      loginBox.value = false
     }
-}
-// data(){
-//     return{
-//         show:true,
-//     }
-// }
+    const show = () => {
+      loginBox.value = true
+    }
+    const backBtn = ref(false)
+    onMounted(() => {
+      const view=document.querySelector('.container')
+        view.onscroll = (e) => {
+          var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+          console.log(scrollTop)
+          // //变量windowHeight是可视区的高度
+          // var windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
+          // //变量scrollHeight是滚动条的总高度
+          // var scrollHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
+          // //滚动条到底部的条件
+          if (scrollTop  > 800) {
+            backBtn.value=true
+          }
+          else {
+            backBtn.value=false
+          }
+        }
+    })
+
+    const toTop = () => {
+      window.scroll(0,0)
+    }
+    return {loginBox,updatelogin,show,backBtn,toTop}
+  }
 }
 </script>
 <style scoped lang="less">
+.backTop {
+  border-radius: 100%;
+  width: 40px;
+  height: 40px;
+  background-color: #fff;
+  position: fixed;
+  right: 20px;
+  bottom: 50px;
+  border: none;
+}
 .login-box {
+  display: block;
   z-index: 7;
   width: 100vw;
   height: 100vh;
@@ -144,15 +182,11 @@ components:{
   left: 50%;
   transform: translate(-50%,-50%);
   background-color: rgba(174, 160, 160, 0.3);
-  display: none;
 }
 #login-show{
   position: fixed;
 
   z-index: 99;
-}
-#login-show:checked + .login-box {
-  display: block;
 }
 * {
     padding: 0;

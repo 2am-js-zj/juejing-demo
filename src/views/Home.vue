@@ -3,8 +3,8 @@
   <div class="container">
       <div class="body">
         <div class="juejin">
-        <div class="main">
-            <div class="contentLeft">
+        <div class="main-box">
+            <div class="contentLeft" :class="{aaa:flag}">
                 <header>
                     <nav>
                         <ul class="list">
@@ -24,20 +24,22 @@
                 </header>
                 <div class="mainContent">
                   <!-- 此处放文章列表 -->
-                  <div class="article" @click="$router.push('/article')" v-for="item in list" :key="item.key">
+                  <div v-if="flag">
+                   <div class="article" v-for="(item,index) in list" :key="index" @click="$router.push('/article');setFn(item)">
                         <div class="sub_content">
                             <div class="contenthead">
                                 <a :router-link="`/user/${item.aut_id}`">{{item.aut_name}}</a>
                                 <div class="time">
-                                    <p>{{item.createDate}}</p>
+                                    <p>{{dayjs(item.createDate, 'YYYY年MM月DD日 HH:MM'&&'YYYY年MM月DD日', 'zh-cn').fromNow()}}</p>
                                 </div>
                                 <div class="label">
-                                    <a href="#" v-for="(tag,index) in item.tag" :key="index" style="z-index:9">{{tag}}</a>
+                                    <a href="#" v-for="(tag,index) in item.tag" :key="index" style="z-index:5">{{tag}}</a>
                                 </div>
                             </div>
                             <div class="contentbody">
+                              <div>
                                 <div class="head">
-                                    <h3 title="大鱼海棠">{{item.title}}</h3>
+                                    <h3 :title="item.title">{{item.title}}</h3>
                                 </div>
                                 <div class="simplecontent">
                                     <p>{{item.description}}</p>
@@ -56,8 +58,19 @@
                                         <span class="active">{{item.comment}}</span>
                                     </li>
                                 </ul>
+                                </div>
+                                 <img :src="item.cover" v-if="item.cover" class="cover">
                             </div>
+
                         </div>
+
+                   </div>
+                  </div>
+                  <div  style="padding:18px;" v-else>
+                   <Skeleton width="300px" height="15px" animated></Skeleton>
+                   <Skeleton width="600px" height="15px" animated></Skeleton>
+                   <Skeleton width="500px" height="15px" animated></Skeleton>
+                   <Skeleton width="400px" height="15px" animated></Skeleton>
                   </div>
                 </div>
             </div>
@@ -259,30 +272,81 @@
                 </div>
             </div>
         </div>
-    </div>
+        </div>
       </div>
   </div>
 </template>
 <script>
+import store from '@/store';
 import Nav2 from '@/components/Nav-2.vue';
 import { findList } from '@/api/list';
-import { ref } from '@vue/reactivity';
+import {  ref } from 'vue';
+import Skeleton from '@/components/skeleton.vue';
+import { onMounted } from 'vue';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import customParseFormat from 'dayjs/plugin/customParseFormat'
+// import 'dayjs/locale/zh-cn'
+
+
 export default {
-  components: { Nav2, },
+  components: { Nav2, Skeleton },
   setup() {
-    const list=ref([])
-    findList().then(data => {
-      console.log(data)
-      list.value=data.data
+    const list = ref([])
+    const flag = ref(false)
+    const res = []
+    onMounted(() => {
+        window.onscroll = (e) => {
+          var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+          //变量windowHeight是可视区的高度
+          var windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
+          //变量scrollHeight是滚动条的总高度
+          var scrollHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
+          //滚动条到底部的条件
+          if (scrollTop + windowHeight > scrollHeight-1) {
+            findList().then(data => {
+              list.value.push(...data.data)
+              console.log(list.value)
+              console.log('触底了')
+            })
+          }
+        }
     })
-    console.log(list)
-    return {list}
+
+      findList().then(data => {
+      setTimeout(() => {
+        res.push(...data.data)
+        res.push(...data.data)
+        // list.value = data.data
+        flag.value = true
+        list.value = res
+      }, 1000)
+
+      })
+    dayjs.extend(customParseFormat)
+    dayjs.extend(relativeTime)
+
+    const setFn = (item) => {
+      store.commit("setUser", {
+        aut_name:item.aut_name,
+        aut_photo:item.aut_photo,
+        createDate:item.createDate,
+        is_followed:item.is_followed,
+        read:item.read,
+        thumbUp:item.thumbUp,
+        comment:item.comment,
+      })
+    }
+    return  {list,flag,dayjs,setFn}
   }
 }
 </script>
 <style scoped lang="less">
 @import url('@/style/list/font_3nva912sb1m/iconfont.css');
 @import url('@/style/list/font_qg4yk42n66a/iconfont.css');
+ .aaa{
+  height: auto !important;
+}
 .body {
   margin-top: 80px;
   background-color: pink;
@@ -307,7 +371,6 @@ a{
 }
 .juejin{
     width: 100%;
-    height: 3000px;
     margin-top: 30px;
     background-color: #f4f5f5;
 }
@@ -318,11 +381,12 @@ a{
     background-color: rgb(185, 138, 80);
     margin-bottom: 25px;
 }
-.main{
+.main-box{
     margin: 0px auto;
     width: 960px;
     display: flex;
     .contentLeft{
+      height: 162px;
         width: 700px;
         background-color: #fff;
         .mainContent{
@@ -330,7 +394,15 @@ a{
               cursor: pointer;
               // display: none;
               background-color: #fff;
+              .cover{
+               margin-right: 8px;
+               margin-top: -6px;
+                width: 120px;
+                height: 80px;
+
+              }
               .sub_content{
+                flex:1;
                   padding: 12px 20px 0px 20px;
                   &:hover{
                       background-color: #fafafa;
@@ -368,6 +440,8 @@ a{
                   .contentbody{
                       margin-top: 12px;
                       padding-bottom: 12px;
+                      display: flex;
+                      justify-content: space-between;
                       border-bottom: 1px solid #e5e6eb;
                       div{
                           margin-bottom: 8px;

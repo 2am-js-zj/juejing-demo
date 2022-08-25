@@ -1,15 +1,15 @@
 <template>
   <div class="container">
-    <div class="juejin">
+    <div class="juejin-w">
         <div class="why_main">
             <div class="main_body">
                 <div class="wrapper">
                     <div class="userview">
                         <div class="userviw_header">
-                            <img src="https://p3-passport.byteacctimg.com/img/mosaic-legacy/3791/5035712059~300x300.image" alt="图片无法加载">
+                            <img :src="item.aut_photo||'https://p3-passport.byteacctimg.com/img/mosaic-legacy/3791/5035712059~300x300.image'" alt="图片无法加载">
                             <div class="usermsg">
                                 <div>
-                                    <h2>用户51218773828148</h2>
+                                    <h2>{{item.aut_name||'用户51218773828148'}}</h2>
                                 </div>
                                 <div>
                                     <a href="#">
@@ -47,7 +47,7 @@
                             <div class="left">
                                 <img src="	https://lf3-cdn-tos.bytescm.com/obj/static/xitu_juejin_web/img/badge-count-icon.0586ac4.png" alt="图片无法加载">
                                 <!-- <span class="iconfont icon-sharpicons_ribbon-"></span> -->
-                                <span>获得徽章 0</span>
+                                <span>获得徽章 36</span>
                             </div>
                             <div class="right">
                                 <img src="	https://lf3-cdn-tos.bytescm.com/obj/static/xitu_juejin_web/b307148589ab904ec14c386e41b91fda.svg" alt="...">
@@ -352,8 +352,13 @@
   </div>
 </template>
 <script>
+import store from '@/store';
 export default {
+  setup() {
+    const item = store.state.profile
 
+    return {item}
+  }
 }
 </script>
 <style scoped lang="less">

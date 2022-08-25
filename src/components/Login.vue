@@ -51,7 +51,6 @@
             <div  class="agreement-box" style="">
                 注册登录即表示同意
                 <a  href="/terms" target="_blank">用户协议</a>
-                、
                 <a  href="/privacy" target="_blank">隐私政策</a>
             </div>
         </form>
@@ -60,7 +59,6 @@
 
 <script>
 export default {
-
     data() {
         return {
             codeNum: 60,
@@ -115,10 +113,11 @@ export default {
             this.$router.push('/login')
       },
       closeBtn() {
+        console.log('1')
         this.$emit("close")
       }
 
-    },
+  },
 }
 </script>
 
