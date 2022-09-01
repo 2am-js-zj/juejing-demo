@@ -25,10 +25,10 @@
                 <div class="mainContent">
                   <!-- 此处放文章列表 -->
                   <div v-if="flag">
-                   <div class="article" v-for="(item,index) in list" :key="index" @click="$router.push(`/article/${item.id}`);setFn(item)">
+                   <div class="article" v-for="(item,index) in list" :key="index"  @click="$router.push(`/article/${item.id}`);setFn(item)">
                         <div class="sub_content">
                             <div class="contenthead">
-                                <a :router-link="`/user/${item.aut_id}`">{{item.aut_name}}</a>
+                                <a :href="`#/user/${item.aut_id}`">{{item.aut_name}}</a>
                                 <div class="time">
                                     <p>{{dayjs(item.createDate, 'YYYY年MM月DD日 HH:MM'&&'YYYY年MM月DD日', 'zh-cn').fromNow()}}</p>
                                 </div>
@@ -332,7 +332,8 @@ export default {
         'is_followed':item.is_followed,
         'read':item.read,
         'thumbUp':item.thumbUp,
-        'comment':item.comment,
+        'comment': item.comment,
+        'islove':false
       }))
     }
     return  {list,flag,dayjs,setFn}

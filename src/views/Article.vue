@@ -4,9 +4,9 @@
         <!-- 左侧小按钮栏 -->
         <div class="small-btn">
         <ul class="one">
-            <li :class="{activeBlue:islike}" @click="likeBtn()"><i class="iconfont icon-dianzan1"></i><div v-if="item.thumbUp" class="dianzanBox">{{item.thumbUp-700>1000?500:item.thumbUp-700}}</div></li>
+            <li :class="{activeBlue:islike}" @click="likeBtn()"><i class="iconfont icon-dianzan1"></i><div v-if="item.thumbUp" class="dianzanBox">{{item.thumbUp>1000?'1k':item.thumbUp}}</div></li>
             <li><i class="iconfont icon-pinglun"></i><div v-if="item.thumbUp" class="pinglunBox">{{item.comment}}</div></li>
-            <li :class="{activeLove:islove}" @click="loveBtn()"><i class="iconfont icon-shoucang"></i></li>
+            <li :class="{activeLove:item.islove}" @click="loveBtn()"><i class="iconfont icon-shoucang"></i></li>
             <li class="share">
                 <i class="iconfont icon-zhuanfa"></i>
                 <div class="share-box">
@@ -42,11 +42,11 @@
                 <!-- 作者信息栏 -->
                 <div class="author-info">
                     <!-- 头像 -->
-                    <img :src="item.aut_photo||'https://p26-passport.byteacctimg.com/img/user-avatar/ae3b5ed78812b766bd8f5f82a5ee8128~300x300.image'"  @click="$router.push(`/user/${item.aut_id}`)">
+                    <img :src="item.aut_photo||'https://p26-passport.byteacctimg.com/img/user-avatar/ae3b5ed78812b766bd8f5f82a5ee8128~300x300.image'" @click="$router.push(`/user/${item.aut_id}`)">
                     <!-- 基本信息 -->
                     <span class="user-info">
                         <!-- 昵称 -->
-                        <div class="name" @click="$router.to(`/user/${item,aut_id}`)">{{item.aut_name}}
+                        <div class="name" @click="$router.push(`/user/${item.aut_id}`)">{{item.aut_name}}
                         </div>
                         <!-- 发布时间+阅读量 -->
                         <div>
@@ -54,7 +54,7 @@
                         </div>
                     </span>
                     <!-- 关注按钮 -->
-                    <button class="follow-btn">{{item.is_followed ? '+ 关注' :'已关注'}}</button>
+                    <button class="follow-btn" @click="followBtn()">{{item.is_followed ? '+ 关注' :'已关注'}}</button>
                 </div>
                 <!-- 文章详情栏 -->
                 <div class="markdown-body html article-content">
@@ -317,8 +317,7 @@
     </div>
 </template>
 <script>
-import store from '@/store'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted} from 'vue'
 import { findList } from '@/api/list'
 import 'github-markdown-css/github-markdown.css'
 import dayjs from 'dayjs';
@@ -326,18 +325,26 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 export default {
   setup() {
-    const item = JSON.parse(localStorage.getItem('article'))
-    console.log(item)
+    const item = ref(JSON.parse(localStorage.getItem('article')))
     const islike = ref(false)
     const islove = ref(false)
     const likeBtn = () => {
+      if (islike.value) {
+        item.value.thumbUp--
+      } else {
+        item.value.thumbUp++
+      }
+      localStorage.setItem('article',JSON.stringify(item._rawValue))
       islike.value=!islike.value
     }
     const loveBtn = () => {
-      islove.value = !islove.value
-      store.state.profile.thumbUp.value++
+      item.value.islove = !item.value.islove
+      localStorage.setItem('article',JSON.stringify(item._rawValue))
     }
-
+    const followBtn = () => {
+      item.value.is_followed?item.value.is_followed = false:item.value.is_followed=true
+      localStorage.setItem('article',JSON.stringify(item._rawValue))
+    }
     const list = ref([])
     onMounted(() => {
         window.onscroll = (e) => {
@@ -367,13 +374,17 @@ export default {
       })
     dayjs.extend(customParseFormat)
     dayjs.extend(relativeTime)
-    return {item,islike,likeBtn,islove,loveBtn,list,dayjs}
+    return {item,islike,likeBtn,islove,loveBtn,list,dayjs,followBtn}
   }
 }
 </script>
 <style scoped lang="less">
 @import url(../style/article-sr/font-icon/iconfont.css);
   @import url(../style/article-sr/font_icon3/iconfont.css);
+  .active {
+    background-color: #1e80ff;
+    color: #fff;
+  }
 
 .markdown-body {
   box-sizing: border-box;

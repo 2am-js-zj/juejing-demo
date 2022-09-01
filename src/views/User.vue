@@ -37,7 +37,7 @@
                                     </a>
                                 </div>
                                 <div>
-                                    <button @click="$router.push('/edit')">编辑个人资料</button>
+                                    <button @click="$router.push('/edit')" class="gogo" >编辑个人资料</button>
                                 </div>
                             </div>
                         </div>
@@ -366,5 +366,7 @@ export default {
  @import url('@/style/user-why/font_qg4yk42n66a/iconfont.css');
  @import url('@/style/user-why/iconfont/iconfont.css');
  @import url('@/style/user-why/index.css');
-
+ .gogo {
+  cursor: pointer;
+ }
 </style>

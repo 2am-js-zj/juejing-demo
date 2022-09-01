@@ -72,7 +72,7 @@
                             <div class="line"></div>
                             <div class="input-item">
                                 <label class="formlabel" style="width: 56px;">用户名</label>
-                                <input type="text" name aria-label spellcheck="false" autocomplete placeholder="填写你的用户名"
+                                <input type="text" name aria-label spellcheck="false" autocomplete :placeholder="item.aut_name"
                                     maxlength="20">
                                 <span></span>
                             </div>
@@ -116,9 +116,11 @@
                                         <i></i>
                                         <div class="click-text">点击修改头像</div>
                                     </div>
-                                    <img src="https://p9-passport.byteacctimg.com/img/mosaic-legacy/3795/3044413937~300x300.image"
+                                    <label for="file">
+                                    <img :src="item.aut_photo?item.aut_photo:'https://p9-passport.byteacctimg.com/img/mosaic-legacy/3795/3044413937~300x300.image'"
                                         alt class="lazy-avator">
-                                    <input type="file" class="input" accept="*image">
+                                    </label>
+                                    <input type="file" class="input" accept="*image" id="file" >
                                 </div>
                                 <div class="title">我的头像</div>
                                 <div class="description">支持jpg、png、jpeg
@@ -249,11 +251,16 @@ export default {
       show.value=[0,0,0,1]
     }
 
-    return {show,show1,show2,show3,show4}
+    const item = ref(JSON.parse(localStorage.getItem('article')))
+
+    return {show,show1,show2,show3,show4,item}
   }
 }
 </script>
 <style scoped>
+  #file {
+    display: none;
+  }
 body {
     margin: 0;
     background-color: rgb(244, 245, 245);
@@ -483,6 +490,9 @@ textarea::-webkit-input-placeholder {
 
 .lazy-avator {
     border-radius: 100px;
+    width: 180px;
+    height: 180px;
+    cursor: pointer;
 
 }
 .user-text button {
