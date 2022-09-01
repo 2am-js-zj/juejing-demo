@@ -2,16 +2,20 @@ import { createStore } from 'vuex'
 import createPersistedstate from 'vuex-persistedstate'
 export default createStore({
   state: {
-    profile: {
-      token: '',
-      username: 'zs',
-      photo: '',
-    }
+    info: {
+      aut_name: '',
+      aut_photo: '',
+      createDate: '',
+      is_followed: '',
+      read: '',
+      thumbUp: '',
+      comment: ''
+    },
   },
   getters: {
   },
   mutations: {
-    setUser(state, payload) {
+    setInfo(state, payload) {
       state.profile = payload
     }
   },

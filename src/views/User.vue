@@ -352,10 +352,9 @@
   </div>
 </template>
 <script>
-import store from '@/store';
 export default {
   setup() {
-    const item = store.state.profile
+    const item = JSON.parse(localStorage.getItem('article'))
 
     return {item}
   }

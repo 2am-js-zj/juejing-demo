@@ -97,14 +97,13 @@ export default {
             if (!this.validate('userTel')) return
             if (!this.validate('userPwd')) return
             //发送请求，用axios？
-
         },
         validate(key) {
             let bool = true
             if (!this.rules[key].rule.test(this[key])) {
                 alert(this.rules[key].msg)
                 bool = false
-                return false
+                return
             }
             return bool
         },

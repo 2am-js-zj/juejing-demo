@@ -25,7 +25,7 @@
                 <div class="mainContent">
                   <!-- 此处放文章列表 -->
                   <div v-if="flag">
-                   <div class="article" v-for="(item,index) in list" :key="index" @click="$router.push('/article');setFn(item)">
+                   <div class="article" v-for="(item,index) in list" :key="index" @click="$router.push(`/article/${item.id}`);setFn(item)">
                         <div class="sub_content">
                             <div class="contenthead">
                                 <a :router-link="`/user/${item.aut_id}`">{{item.aut_name}}</a>
@@ -277,7 +277,6 @@
   </div>
 </template>
 <script>
-import store from '@/store';
 import Nav2 from '@/components/Nav-2.vue';
 import { findList } from '@/api/list';
 import {  ref } from 'vue';
@@ -287,8 +286,6 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 // import 'dayjs/locale/zh-cn'
-
-
 export default {
   components: { Nav2, Skeleton },
   setup() {
@@ -327,15 +324,16 @@ export default {
     dayjs.extend(relativeTime)
 
     const setFn = (item) => {
-      store.commit("setUser", {
-        aut_name:item.aut_name,
-        aut_photo:item.aut_photo,
-        createDate:item.createDate,
-        is_followed:item.is_followed,
-        read:item.read,
-        thumbUp:item.thumbUp,
-        comment:item.comment,
-      })
+      localStorage.setItem('article', JSON.stringify({
+        'aut_id':item.aut_id,
+        'aut_name':item.aut_name,
+        'aut_photo':item.aut_photo,
+        'createDate':item.createDate,
+        'is_followed':item.is_followed,
+        'read':item.read,
+        'thumbUp':item.thumbUp,
+        'comment':item.comment,
+      }))
     }
     return  {list,flag,dayjs,setFn}
   }

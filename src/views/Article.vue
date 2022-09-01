@@ -36,17 +36,17 @@
         <div class="view-box">
             <!-- 文章部分 -->
             <div class="article">
-                <div class="content">
+                <div class="content" v-if="item">
                 <!-- 标题 -->
                 <h1 class="title">{{item.title}}</h1>
                 <!-- 作者信息栏 -->
                 <div class="author-info">
                     <!-- 头像 -->
-                    <img :src="item.aut_photo||'https://p26-passport.byteacctimg.com/img/user-avatar/ae3b5ed78812b766bd8f5f82a5ee8128~300x300.image'"  @click="$router.push('./user')">
+                    <img :src="item.aut_photo||'https://p26-passport.byteacctimg.com/img/user-avatar/ae3b5ed78812b766bd8f5f82a5ee8128~300x300.image'"  @click="$router.push(`/user/${item.aut_id}`)">
                     <!-- 基本信息 -->
                     <span class="user-info">
                         <!-- 昵称 -->
-                        <div class="name" @click="$router.push('./user')">{{item.aut_name}}
+                        <div class="name" @click="$router.to(`/user/${item,aut_id}`)">{{item.aut_name}}
                         </div>
                         <!-- 发布时间+阅读量 -->
                         <div>
@@ -54,7 +54,7 @@
                         </div>
                     </span>
                     <!-- 关注按钮 -->
-                    <button class="follow-btn">{{ item.is_followed ? '+ 关注' :'已关注'}}</button>
+                    <button class="follow-btn">{{item.is_followed ? '+ 关注' :'已关注'}}</button>
                 </div>
                 <!-- 文章详情栏 -->
                 <div class="markdown-body html article-content">
@@ -161,6 +161,9 @@
 <p>上面只是罗列了很少一部分，后续会继续补充，而且每一个点讲明白都需要非常多的精力，后续关于这部分的文章，每更新一篇，都会来这个下面做记录和更新，加油！</p>
                 </div>
                 </div>
+                <div v-else>
+                  66666666666666
+                </div>
                 <!-- 发表评论 -->
                 <div class="comment">
                     <div class="header">
@@ -187,7 +190,7 @@
                         <div class="com-list">
                             <img src="https://p26-passport.byteacctimg.com/img/user-avatar/fd2e197538e10388982140ac8096344e~300x300.image" @click="$router.push('./user')">
                             <div class="comment-main">
-                                <div class="name" @click="$router.push('./user')">
+                                <div class="name" @click="$router.push(`/user/:${item.aut_id}`)">
                                     <span>MiyueFE</span>
                                 </div>
                                 <div class="com-content">仿佛看到了当年刚毕业的自己，写的很好；也发现自己不会的还很多，一起努力！</div>
@@ -280,7 +283,7 @@
             <div class="sidebar">
                 <!-- 作者卡片 -->
                 <div class="aut_card">
-                    <div class="info" @click="$router.push('./user')">
+                    <div class="info" @click="$router.push(`/user/${item.aut_id}`)">
                         <img :src="item.aut_photo||'https://p26-passport.byteacctimg.com/img/user-avatar/ae3b5ed78812b766bd8f5f82a5ee8128~300x300.image'" alt="">
                         <div class="info-box">
                             <span class="name">{{item.aut_name}}</span>
@@ -317,13 +320,13 @@
 import store from '@/store'
 import { ref, onMounted } from 'vue'
 import { findList } from '@/api/list'
-
+import 'github-markdown-css/github-markdown.css'
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 export default {
   setup() {
-    const item = store.state.profile
+    const item = JSON.parse(localStorage.getItem('article'))
     console.log(item)
     const islike = ref(false)
     const islove = ref(false)
@@ -353,38 +356,38 @@ export default {
           }
         }
     })
-
-      findList().then(data => {
+    findList().then(data => {
+      let res=[]
       setTimeout(() => {
         res.push(...data.data)
         res.push(...data.data)
-        // list.value = data.data
         list.value = res
       }, 2000)
 
       })
     dayjs.extend(customParseFormat)
     dayjs.extend(relativeTime)
-
-    const setFn = (item) => {
-      store.commit("setUser", {
-        aut_name:item.aut_name,
-        aut_photo:item.aut_photo,
-        createDate:item.createDate,
-        is_followed:item.is_followed,
-        read:item.read,
-        thumbUp:item.thumbUp,
-        comment:item.comment,
-      })
-    }
-    return {item,islike,likeBtn,islove,loveBtn,list,dayjs,setFn}
+    return {item,islike,likeBtn,islove,loveBtn,list,dayjs}
   }
 }
 </script>
 <style scoped lang="less">
 @import url(../style/article-sr/font-icon/iconfont.css);
   @import url(../style/article-sr/font_icon3/iconfont.css);
-  .markdown-body{word-break:break-word;line-height:1.75;font-weight:400;font-size:16px;overflow-x:hidden;color:#333}.markdown-body h1,.markdown-body h2,.markdown-body h3,.markdown-body h4,.markdown-body h5,.markdown-body h6{line-height:1.5;margin-top:35px;margin-bottom:10px;padding-bottom:5px}.markdown-body h1{font-size:24px;margin-bottom:5px}.markdown-body h2,.markdown-body h3,.markdown-body h4,.markdown-body h5,.markdown-body h6{font-size:20px}.markdown-body h2{padding-bottom:12px;border-bottom:1px solid #ececec}.markdown-body h3{font-size:18px;padding-bottom:0}.markdown-body h6{margin-top:5px}.markdown-body p{line-height:inherit;margin-top:22px;margin-bottom:22px}.markdown-body img{max-width:100%}.markdown-body hr{border:none;border-top:1px solid #ddd;margin-top:32px;margin-bottom:32px}.markdown-body code{word-break:break-word;border-radius:2px;overflow-x:auto;background-color:#fff5f5;color:#ff502c;font-size:.87em;padding:.065em .4em}.markdown-body code,.markdown-body pre{font-family:Menlo,Monaco,Consolas,Courier New,monospace}.markdown-body pre{overflow:auto;position:relative;line-height:1.75}.markdown-body pre>code{font-size:12px;padding:15px 12px;margin:0;word-break:normal;display:block;overflow-x:auto;color:#333;background:#f8f8f8}.markdown-body a{text-decoration:none;color:#0269c8;border-bottom:1px solid #d1e9ff}.markdown-body a:active,.markdown-body a:hover{color:#275b8c}.markdown-body table{display:inline-block!important;font-size:12px;width:auto;max-width:100%;overflow:auto;border:1px solid #f6f6f6}.markdown-body thead{background:#f6f6f6;color:#000;text-align:left}.markdown-body tr:nth-child(2n){background-color:#fcfcfc}.markdown-body td,.markdown-body th{padding:12px 7px;line-height:24px}.markdown-body td{min-width:120px}.markdown-body blockquote{color:#666;padding:1px 23px;margin:22px 0;border-left:4px solid #cbcbcb;background-color:#f8f8f8}.markdown-body blockquote:after{display:block;content:""}.markdown-body blockquote>p{margin:10px 0}.markdown-body ol,.markdown-body ul{padding-left:28px}.markdown-body ol li,.markdown-body ul li{margin-bottom:0;list-style:inherit}.markdown-body ol li .task-list-item,.markdown-body ul li .task-list-item{list-style:none}.markdown-body ol li .task-list-item ol,.markdown-body ol li .task-list-item ul,.markdown-body ul li .task-list-item ol,.markdown-body ul li .task-list-item ul{margin-top:0}.markdown-body ol ol,.markdown-body ol ul,.markdown-body ul ol,.markdown-body ul ul{margin-top:3px}.markdown-body ol li{padding-left:6px}.markdown-body .contains-task-list{padding-left:0}.markdown-body .task-list-item{list-style:none}@media (max-width:720px){.markdown-body h1{font-size:24px}.markdown-body h2{font-size:20px}.markdown-body h3{font-size:18px}}
+
+.markdown-body {
+  box-sizing: border-box;
+  min-width: 200px;
+  max-width: 980px;
+  margin: 0 auto;
+}
+  .markdown-body{word-break:break-word;line-height:1.75;font-weight:400;font-size:16px;overflow-x:hidden;color:#333}.markdown-body h1,.markdown-body h2,.markdown-body h3,.markdown-body h4,.markdown-body h5,.markdown-body h6{line-height:1.5;margin-top:35px;margin-bottom:10px;padding-bottom:5px}.markdown-body h1{font-size:24px;margin-bottom:5px}.markdown-body h2,.markdown-body h3,.markdown-body h4,.markdown-body h5,.markdown-body h6{font-size:20px}.markdown-body h2{padding-bottom:12px;border-bottom:1px solid #ececec}.markdown-body h3{font-size:18px;padding-bottom:0}.markdown-body h6{margin-top:5px}.markdown-body p{line-height:inherit;margin-top:22px;margin-bottom:22px}.markdown-body img{max-width:100%}.markdown-body hr{border:none;border-top:1px solid #ddd;margin-top:32px;margin-bottom:32px}.markdown-body code{word-break:break-word;border-radius:2px;overflow-x:auto;background-color:#fff5f5;color:#ff502c;font-size:.87em;padding:.065em .4em}
+  .markdown-body code,
+  .markdown-body pre{font-family:Menlo,Monaco,Consolas,Courier New,monospace}
+  .markdown-body pre{overflow:auto;position:relative;line-height:1.75}
+  .markdown-body pre>code{font-size:12px;padding:15px 12px;margin:0;word-break:normal;display:block;overflow-x:auto;color:#333;background:#f8f8f8}
+  .markdown-body a{text-decoration:none;color:#0269c8;border-bottom:1px solid #d1e9ff}.markdown-body a:active,.markdown-body a:hover{color:#275b8c}.markdown-body table{display:inline-block!important;font-size:12px;width:auto;max-width:100%;overflow:auto;border:1px solid #f6f6f6}
+  .markdown-body thead{background:#f6f6f6;color:#000;text-align:left}.markdown-body tr:nth-child(2n){background-color:#fcfcfc}.markdown-body td,.markdown-body th{padding:12px 7px;line-height:24px}.markdown-body td{min-width:120px}.markdown-body blockquote{color:#666;padding:1px 23px;margin:22px 0;border-left:4px solid #cbcbcb;background-color:#f8f8f8}.markdown-body blockquote:after{display:block;content:""}.markdown-body blockquote>p{margin:10px 0}.markdown-body ol,.markdown-body ul{padding-left:28px}.markdown-body ol li,.markdown-body ul li{margin-bottom:0;list-style:inherit}.markdown-body ol li .task-list-item,.markdown-body ul li .task-list-item{list-style:none}.markdown-body ol li .task-list-item ol,.markdown-body ol li .task-list-item ul,.markdown-body ul li .task-list-item ol,.markdown-body ul li .task-list-item ul{margin-top:0}.markdown-body ol ol,.markdown-body ol ul,.markdown-body ul ol,.markdown-body ul ul{margin-top:3px}.markdown-body ol li{padding-left:6px}.markdown-body .contains-task-list{padding-left:0}.markdown-body .task-list-item{list-style:none}@media (max-width:720px){.markdown-body h1{font-size:24px}.markdown-body h2{font-size:20px}.markdown-body h3{font-size:18px}}
   .hljs-comment,.hljs-quote{color:#d4d0ab}.hljs-deletion,.hljs-name,.hljs-regexp,.hljs-selector-class,.hljs-selector-id,.hljs-tag,.hljs-template-variable,.hljs-variable{color:#ffa07a}.hljs-built_in,.hljs-builtin-name,.hljs-link,.hljs-literal,.hljs-meta,.hljs-number,.hljs-params,.hljs-type{color:#f5ab35}.hljs-attribute{color:gold}.hljs-addition,.hljs-bullet,.hljs-string,.hljs-symbol{color:#abe338}.hljs-section,.hljs-title{color:#00e0e0}.hljs-keyword,.hljs-selector-tag{color:#dcc6e0}.markdown-body pre,.markdown-body pre>code.hljs{background:#2b2b2b;color:#f8f8f2}.hljs-emphasis{font-style:italic}.hljs-strong{font-weight:700}@media screen and (-ms-high-contrast:active){.hljs-addition,.hljs-attribute,.hljs-built_in,.hljs-builtin-name,.hljs-bullet,.hljs-comment,.hljs-link,.hljs-literal,.hljs-meta,.hljs-number,.hljs-params,.hljs-quote,.hljs-string,.hljs-symbol,.hljs-type{color:highlight}.hljs-keyword,.hljs-selector-tag{font-weight:700}}
   .activeLove {
      i {

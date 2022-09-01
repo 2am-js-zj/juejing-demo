@@ -6,8 +6,6 @@ const instance = axios.create({
   baseURL,
   timeout: 5000,
 })
-
-
 export default (url, method, submitData) => {
   // 负责发请求：请求地址，请求方式，提交的数据
   return instance({
